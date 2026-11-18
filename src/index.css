@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Outfit", system-ui, -apple-system, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  color-scheme: dark;
+  --bg-canvas: #0B0C10;
+  --bg-card: #15171E;
+  --bg-elevated: #1D202A;
+  --border-hairline: rgba(255, 255, 255, 0.08);
+  --accent-crimson: #E50914;
+  --accent-crimson-hover: #F6121D;
+  --text-primary: #F5F7FA;
+  --text-secondary: #9CA3B2;
+}
+
+html,
+body {
+  background-color: #0B0C10;
+  color: #F5F7FA;
+  font-family: var(--font-sans);
+  letter-spacing: 0.01em;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono-tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Refined Netflix Cinema Glow Typography */
+.glow-wordmark {
+  text-shadow: 0 0 22px rgba(229, 9, 20, 0.45);
+}
+
+.glow-hero-title {
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.75), 0 0 36px rgba(229, 9, 20, 0.22);
+}
+
+.glow-accent-text {
+  text-shadow: 0 0 18px rgba(229, 9, 20, 0.45);
+}
+
+/* Subtle horizontal carousel scrollbar */
+.stream-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.stream-scroll::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.stream-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.stream-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+}
+
+/* Shimmer loading skeleton */
+@keyframes lpShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #15171E 25%,
+    #1E212B 50%,
+    #15171E 75%
+  );
+  background-size: 200% 100%;
+  animation: lpShimmer 1.5s infinite linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+  }
+}

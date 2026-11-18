@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#221015" />
+      <stop offset="100%" stop-color="#0B0C10" />
+    </radialGradient>
+    <linearGradient id="crimsonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF1E2B" />
+      <stop offset="100%" stop-color="#B80710" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bgGlow)" />
+  <rect x="14" y="14" width="484" height="484" rx="100" stroke="#E50914" stroke-opacity="0.35" stroke-width="4" />
+  <circle cx="256" cy="240" r="126" fill="url(#crimsonGrad)" />
+  <path d="M222 178L326 240L222 302V178Z" fill="#FFFFFF" />
+  <text x="256" y="428" text-anchor="middle" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="44" letter-spacing="4">LINKPLAYHD</text>
+</svg>

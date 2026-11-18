@@ -1,0 +1,8 @@
+{
+  "name": "LINKPLAYHD",
+  "description": "Premium dark video hosting, adaptive streaming player, and shareable watch-link management platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

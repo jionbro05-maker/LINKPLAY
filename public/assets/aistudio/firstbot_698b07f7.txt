@@ -1,0 +1,377 @@
+LINKPLAYHD – FULL WEBSITE PRD
+
+1. PROJECT OVERVIEW
+
+Build a fully functional, responsive video hosting and player-link management website named LINKPLAYHD.
+
+Website purpose:
+The administrator can upload authorized video/media files or add an externally hosted video player URL. The system generates a unique, shareable LINKPLAYHD watch link.
+
+Example:
+https://yourdomain.com/watch/unique-video-id
+
+Users can open the link and watch the video using a premium, responsive video player.
+
+The website must work on:
+
+- Android
+- iPhone
+- Tablets
+- Desktop
+- Smart TVs and supported TV browsers
+
+2. DESIGN & BRANDING
+
+Brand: LINKPLAYHD
+
+Design:
+
+- Premium dark streaming interface.
+- Background: #101114.
+- Cards: #191B20.
+- Accent: muted electric blue.
+- White and soft grey typography.
+- Smooth transitions.
+- Subtle hover effects.
+- Premium loading animations.
+- No excessive gradients.
+- No RGB effects.
+- No generic AI-looking design.
+
+Footer credit:
+Made with LINKPLAYHD
+
+Telegram Channel:
+@NETWORKBOYOU
+
+Telegram Contact:
+@SAMVIIR
+
+3. ADMIN LOGIN
+
+Create a secure admin login page.
+
+Initial credentials:
+
+- Username: SAMVIR32
+- Password: SAMARTH4
+
+Important:
+Store credentials securely as server-side secrets or hashed database credentials. Never expose them in frontend source code.
+
+Features:
+
+- Login
+- Logout
+- Session management
+- Change password
+- Protected admin routes
+- Login attempt protection
+
+4. ADMIN DASHBOARD
+
+After successful login, show a premium dashboard.
+
+Dashboard statistics:
+
+- Total Videos
+- Total Video Views
+- Active Live Users
+- Total Generated Links
+- Storage Used
+- Recently Added Videos
+
+Sidebar:
+
+1. Dashboard
+2. Add New Video
+3. Manage Videos
+4. Live Users
+5. Analytics
+6. Settings
+7. Logout
+
+5. ADD NEW VIDEO
+
+Create two content publishing methods.
+
+Method A: Upload Media
+
+Allow administrator to:
+
+- Upload MP4 files.
+- Upload supported video formats.
+- Enter video title.
+- Add description.
+- Upload thumbnail.
+- Select category.
+- Publish or save as draft.
+
+Use secure object storage and resumable uploads for large files.
+
+Method B: External Player URL
+
+Input fields:
+
+- Video Title
+- Video Description
+- Thumbnail URL
+- External Player URL
+- Category
+- Publish Status
+
+Example external URL:
+https://playdrive.vip/e/AQGrE48AAgDqcw?stream=hd
+
+Use a secure, provider-approved embed integration.
+
+Validate URLs and reject unsafe schemes, private network addresses, and unauthorized sources.
+
+Do not proxy arbitrary external URLs through the backend.
+
+6. AUTOMATIC LINK GENERATOR
+
+After publishing any video, automatically generate a unique watch URL.
+
+Example:
+https://yourdomain.com/watch/abc123xyz
+
+Features:
+
+- Copy Link
+- Share Link
+- Open Preview
+- QR Code
+- Enable/Disable Link
+- Delete Video
+
+Every video must have its own permanent unique ID.
+
+7. VIDEO PLAYER
+
+Create a professional responsive player.
+
+Player features:
+
+- Play / Pause
+- Volume Control
+- Fullscreen
+- Progress Bar
+- Playback Speed
+- Picture-in-Picture where supported
+- 10-second forward
+- 10-second backward
+- Keyboard shortcuts
+- Mobile touch-friendly controls
+- Auto-hide controls
+- Loading indicator
+- Error handling
+- Resume playback where supported
+
+QUALITY MANAGEMENT
+
+Show a Quality button in the player.
+
+Available options when supported by the source:
+
+- Auto
+- 2160p (4K)
+- 1080p
+- 720p
+- 480p
+- 360p
+
+Only display quality options actually provided by the video source.
+
+Use HLS/DASH adaptive streaming where supported.
+
+For external providers, use their official embed player and available controls. Do not promise custom quality controls if the provider does not expose them.
+
+8. LIVE USER TRACKER
+
+Create a REAL live visitor tracking system.
+
+Admin can see:
+
+- Currently Active Users
+- Currently Watching Videos
+- Total Active Sessions
+- Video-wise Active Viewers
+- Last Activity
+- Device Category
+- Browser Category
+
+Implementation:
+
+- Use server-side session tracking.
+- Use WebSocket or Supabase Realtime.
+- Send heartbeat every 20–30 seconds.
+- Mark a user inactive after 60–90 seconds without heartbeat.
+- Remove expired sessions automatically.
+
+IMPORTANT:
+Never use random numbers or simulated users.
+
+Count only real active sessions. Deduplicate sessions where appropriate and explain that the number represents active browser sessions, not verified unique people.
+
+9. MANAGE VIDEOS
+
+Admin video management table:
+
+Columns:
+
+- Thumbnail
+- Video Title
+- Video ID
+- Views
+- Active Viewers
+- Published Date
+- Status
+- Actions
+
+Actions:
+
+- Edit
+- Delete
+- Copy Link
+- Preview
+- Disable Link
+- Enable Link
+
+Include search and category filters.
+
+10. ANALYTICS
+
+Create a detailed analytics page.
+
+Display:
+
+- Total views
+- Daily views
+- Weekly views
+- Monthly views
+- Most watched videos
+- Active viewers
+- Average watch duration
+- Playback errors
+
+Use real database data.
+
+Include attractive charts and date filters.
+
+11. WATCH PAGE
+
+Public users opening a generated link should see:
+
+1. Premium video player.
+2. Video title.
+3. Video description.
+4. Quality controls where supported.
+5. Share button.
+6. Telegram channel credit.
+7. Related videos if enabled.
+
+Do not require user registration to watch publicly available videos.
+
+Optimize player initialization and loading performance.
+
+12. DATABASE STRUCTURE
+
+Create these tables:
+
+admins
+
+- id
+- username
+- password_hash
+- created_at
+- last_login
+
+videos
+
+- id
+- title
+- description
+- thumbnail_url
+- source_type
+- source_url
+- storage_path
+- category
+- status
+- created_at
+- updated_at
+
+video_views
+
+- id
+- video_id
+- session_id
+- watched_duration
+- created_at
+
+live_sessions
+
+- id
+- session_id
+- video_id
+- device_type
+- browser
+- last_heartbeat
+- created_at
+
+analytics
+
+- id
+- video_id
+- event_type
+- created_at
+
+13. BACKEND & TECHNOLOGY
+
+Preferred stack:
+
+- Frontend: React + TypeScript
+- Styling: Tailwind CSS
+- UI: shadcn/ui
+- Backend: Supabase
+- Database: PostgreSQL
+- Realtime: Supabase Realtime
+- Authentication: Secure server-side authentication
+- Storage: Supabase Storage or scalable object storage
+- Video playback: HTML5 Video + HLS.js where compatible
+
+Use database Row Level Security.
+
+Public users must never access admin functions or private source-management records.
+
+14. PERFORMANCE & RELIABILITY
+
+- Lazy-load thumbnails.
+- Optimize images.
+- Use CDN delivery.
+- Support resumable uploads.
+- Handle unsupported video formats gracefully.
+- Provide playback error messages.
+- Avoid unnecessary API requests.
+- Make the website responsive.
+- Add loading skeletons.
+- Prevent duplicate view counting.
+- Handle expired or disabled links.
+
+15. FINAL REQUIREMENTS
+
+Build the complete working website, not just a UI prototype.
+
+Every button must work.
+
+Admin login must work.
+Video upload must work.
+External URL publishing must work for supported providers.
+Unique links must work.
+Player controls must work where supported.
+Real-time user tracking must work.
+Analytics must use actual database records.
+
+Create polished loading, empty, error and success states.
+
+Deliver a production-ready LINKPLAYHD website with a premium dark streaming experience.
