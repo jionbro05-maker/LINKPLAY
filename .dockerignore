@@ -1,0 +1,8 @@
+node_modules
+dist
+dev-dist
+data
+uploads
+.env
+.env.local
+*.log

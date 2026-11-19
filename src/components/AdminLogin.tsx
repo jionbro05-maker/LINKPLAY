@@ -2,6 +2,7 @@ import { Eye, EyeOff, Lock, ShieldCheck } from 'lucide-react';
 import { motion } from 'motion/react';
 import { FormEvent, useState } from 'react';
 import { setAdminToken } from '../lib/adminAuth';
+import { apiUrl, parseJsonResponse } from '../lib/api';
 
 interface AdminLoginProps {
   onSuccess: (admin: { id: number; username: string }) => void;
@@ -26,17 +27,17 @@ export function AdminLogin({ onSuccess, onNavigateHome }: AdminLoginProps) {
     setError(null);
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(apiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ username: username.trim(), password }),
       });
-      const data = (await res.json()) as {
+      const data = await parseJsonResponse<{
         admin?: { id: number; username: string };
         token?: string;
         error?: string;
-      };
+      }>(res, 'Sign-in failed');
       if (!res.ok || !data.admin) {
         setError(data.error || 'Authentication failed.');
         return;
@@ -45,8 +46,9 @@ export function AdminLogin({ onSuccess, onNavigateHome }: AdminLoginProps) {
         setAdminToken(data.token);
       }
       onSuccess(data.admin);
-    } catch {
-      setError('Network error while signing in. Please try again.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      setError(msg || 'Network error while signing in. Please try again.');
     } finally {
       setSubmitting(false);
     }

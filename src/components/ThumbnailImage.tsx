@@ -1,5 +1,6 @@
 import { Film } from 'lucide-react';
 import { useState } from 'react';
+import { resolveMediaUrl } from '../lib/api';
 
 interface ThumbnailImageProps {
   src?: string;
@@ -9,8 +10,9 @@ interface ThumbnailImageProps {
 
 export function ThumbnailImage({ src, alt, className = '' }: ThumbnailImageProps) {
   const [failed, setFailed] = useState(false);
+  const resolvedSrc = resolveMediaUrl(src);
 
-  if (!src || failed) {
+  if (!resolvedSrc || failed) {
     return (
       <div
         className={`flex flex-col items-center justify-center bg-gradient-to-br from-[#15171E] via-[#101218] to-[#0B0C10] text-[#9CA3B2] ${className}`}
@@ -25,7 +27,7 @@ export function ThumbnailImage({ src, alt, className = '' }: ThumbnailImageProps
 
   return (
     <img
-      src={src}
+      src={resolvedSrc}
       alt={alt}
       loading="lazy"
       referrerPolicy="no-referrer"

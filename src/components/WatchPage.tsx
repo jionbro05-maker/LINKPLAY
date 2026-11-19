@@ -1,6 +1,7 @@
 import { ArrowLeft, Check, Copy, EyeOff, Send, Share2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCallback, useEffect, useState } from 'react';
+import { apiUrl, parseJsonResponse } from '../lib/api';
 import { formatDateShort, getTelegramHref, getWatchUrl } from '../lib/format';
 import { getBrowserSessionId } from '../lib/session';
 import { PublicConfig, RelatedVideoItem, VideoItem } from '../types';
@@ -29,10 +30,15 @@ export function WatchPage({ videoId, onNavigate, videoCounts, config }: WatchPag
     setErrorState(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    fetch(`/api/public/videos/${encodeURIComponent(videoId)}`)
+    fetch(apiUrl(`/api/public/videos/${encodeURIComponent(videoId)}`))
       .then(async (res) => {
-        const body = await res.json();
-        if (!res.ok) {
+        const body = await parseJsonResponse<{
+          video?: VideoItem;
+          related?: RelatedVideoItem[];
+          error?: string;
+          disabled?: boolean;
+        }>(res, 'Video not found');
+        if (!res.ok || !body.video) {
           throw {
             message: body.error || 'Video not found',
             disabled: Boolean(body.disabled),
@@ -65,7 +71,7 @@ export function WatchPage({ videoId, onNavigate, videoCounts, config }: WatchPag
 
   const recordWatchDuration = useCallback(
     (seconds: number) => {
-      fetch('/api/public/views', {
+      fetch(apiUrl('/api/public/views'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -93,7 +99,7 @@ export function WatchPage({ videoId, onNavigate, videoCounts, config }: WatchPag
 
   const logEvent = useCallback(
     (eventType: 'play' | 'pause' | 'error' | 'share', metadata?: string) => {
-      fetch('/api/public/events', {
+      fetch(apiUrl('/api/public/events'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ videoId, eventType, metadata }),

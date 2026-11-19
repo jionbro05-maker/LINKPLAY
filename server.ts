@@ -1,10 +1,10 @@
 import 'dotenv/config';
 import crypto from 'crypto';
-import express, { NextFunction, Request, Response } from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import fs from 'fs';
 import http from 'http';
 import path from 'path';
-import { createServer as createViteServer } from 'vite';
+import type { ViteDevServer } from 'vite';
 import { WebSocket, WebSocketServer } from 'ws';
 import {
   cleanupExpiredSessions,
@@ -24,7 +24,30 @@ import {
   verifyPassword,
 } from './src/server/security.ts';
 
-const PORT = Number(process.env.PORT) || 3000;
+function isProductionRuntime(): boolean {
+  if (process.env.NODE_ENV === 'production') return true;
+  if (process.env.NODE_ENV === 'development') return false;
+  return fs.existsSync(path.resolve(process.cwd(), 'dist', 'index.html'));
+}
+
+function resolveListenPort(): number {
+  const portIdx = process.argv.indexOf('--port');
+  if (portIdx !== -1 && process.argv[portIdx + 1]) {
+    const cliPort = Number(process.argv[portIdx + 1]);
+    if (Number.isFinite(cliPort) && cliPort > 0) return cliPort;
+  }
+  if (isProductionRuntime()) {
+    return Number(process.env.PORT) || 3000;
+  }
+  const envPort = Number(process.env.PORT);
+  const nginxPort = Number(process.env.NGINX_PORT);
+  if (Number.isFinite(envPort) && envPort > 0 && envPort !== nginxPort && envPort !== 8080) {
+    return envPort;
+  }
+  return Number(process.env.DEFAULT_APP_PORT) || 3000;
+}
+
+const PORT = resolveListenPort();
 const SESSION_COOKIE = 'lp_admin_session';
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 const MAX_LOGIN_ATTEMPTS = 5;
@@ -216,6 +239,31 @@ function getStorageUsedBytes(): number {
 async function startServer() {
   const app = express();
   app.set('trust proxy', 1);
+
+  // CORS support for split frontend + backend GitHub deployments
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin) {
+      const allowed = (process.env.ALLOWED_ORIGINS || '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (allowed.length === 0 || allowed.includes('*') || allowed.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader(
+          'Access-Control-Allow-Headers',
+          'Origin, X-Requested-With, Content-Type, Accept, Authorization, x-upload-id, x-chunk-index, x-filename'
+        );
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      }
+    }
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
+    next();
+  });
 
   // Raw body parser for chunked uploads & thumbnail uploads before JSON parser
   app.use(
@@ -1566,13 +1614,33 @@ async function startServer() {
   // VITE / STATIC SERVING
   // ========================
 
-  const isProd = process.env.NODE_ENV === 'production';
+  const isProd = isProductionRuntime();
   if (!isProd) {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
+    let resolvedVite: ViteDevServer | null = null;
+    const vitePromise = import('vite')
+      .then(({ createServer }) =>
+        createServer({
+          server: { middlewareMode: true },
+          appType: 'spa',
+        })
+      )
+      .then((vite) => {
+        resolvedVite = vite;
+        return vite;
+      })
+      .catch((err) => {
+        console.error('Failed to initialize Vite dev middleware:', err);
+        process.exit(1);
+      });
+
+    app.use(async (req, res, next) => {
+      try {
+        const vite = resolvedVite ?? (await vitePromise);
+        vite.middlewares(req, res, next);
+      } catch (err) {
+        next(err);
+      }
     });
-    app.use(vite.middlewares);
   } else {
     const distDir = path.resolve(process.cwd(), 'dist');
     app.use(express.static(distDir));
@@ -1583,6 +1651,11 @@ async function startServer() {
       res.sendFile(path.join(distDir, 'index.html'));
     });
   }
+
+  server.on('error', (err) => {
+    console.error('LINKPLAYHD HTTP server error:', err);
+    process.exit(1);
+  });
 
   server.listen(PORT, '0.0.0.0', () => {
     console.log(`LINKPLAYHD server running on http://0.0.0.0:${PORT}`);

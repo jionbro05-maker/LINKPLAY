@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { resolveMediaUrl } from '../lib/api';
 import { detectStreamKind, formatDuration } from '../lib/format';
 import { QualitySource } from '../types';
 
@@ -88,17 +89,24 @@ function buildEmbedUrlWithSkip(rawUrl: string, skipSeconds: number): {
 export function VideoPlayer({
   videoId,
   title,
-  sourceUrl,
-  thumbnailUrl,
-  qualitySources = [],
+  sourceUrl: rawSourceUrl,
+  thumbnailUrl: rawThumbnailUrl,
+  qualitySources: rawQualitySources = [],
   skipIntroSeconds = 37,
   watermarkEnabled = true,
   watermarkText = 'LINKPLAYHD · @SAMVIIR',
-  watermarkImageUrl = '',
+  watermarkImageUrl: rawWatermarkImageUrl = '',
   screenShieldEnabled = true,
   onWatchDuration,
   onAnalyticsEvent,
 }: VideoPlayerProps) {
+  const sourceUrl = useMemo(() => resolveMediaUrl(rawSourceUrl), [rawSourceUrl]);
+  const thumbnailUrl = useMemo(() => resolveMediaUrl(rawThumbnailUrl), [rawThumbnailUrl]);
+  const watermarkImageUrl = useMemo(() => resolveMediaUrl(rawWatermarkImageUrl), [rawWatermarkImageUrl]);
+  const qualitySources = useMemo(
+    () => rawQualitySources.map((q) => ({ ...q, url: resolveMediaUrl(q.url) })),
+    [rawQualitySources]
+  );
   const streamKind = useMemo(() => detectStreamKind(sourceUrl), [sourceUrl]);
 
   // Embed state

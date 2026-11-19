@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { apiUrl, wsUrl } from './api';
 
 const SESSION_KEY = 'lp_browser_session_id';
 
@@ -46,7 +47,7 @@ export function useLivePresence(videoId: string | null) {
 
     const sendHttpHeartbeat = async () => {
       try {
-        const res = await fetch('/api/public/heartbeat', {
+        const res = await fetch(apiUrl('/api/public/heartbeat'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -66,8 +67,7 @@ export function useLivePresence(videoId: string | null) {
 
     const connect = () => {
       if (closed) return;
-      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const ws = new WebSocket(`${proto}//${window.location.host}/ws`);
+      const ws = new WebSocket(wsUrl());
       wsRef.current = ws;
 
       ws.onopen = () => {

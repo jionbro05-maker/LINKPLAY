@@ -29,6 +29,7 @@ import {
 import { motion } from 'motion/react';
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { adminFetch, getAdminToken } from '../lib/adminAuth';
+import { wsUrl } from '../lib/api';
 import {
   detectStreamKind,
   formatBytes,
@@ -217,8 +218,7 @@ export function AdminDashboard({
 
     const connectAdminWs = () => {
       if (closed) return;
-      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      ws = new WebSocket(`${proto}//${window.location.host}/ws`);
+      ws = new WebSocket(wsUrl());
       ws.onopen = () => {
         setWsConnected(true);
         ws?.send(JSON.stringify({ type: 'admin_subscribe', token: getAdminToken() || undefined }));

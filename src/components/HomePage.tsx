@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { apiUrl, parseJsonResponse } from '../lib/api';
 import { formatDateShort, getWatchUrl } from '../lib/format';
 import { PublicConfig, VideoItem } from '../types';
 import { ShareModal } from './ShareModal';
@@ -37,10 +38,14 @@ export function HomePage({ onNavigate, videoCounts, totalActive }: HomePageProps
   useEffect(() => {
     let active = true;
     setLoading(true);
-    fetch('/api/public/videos')
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to load catalog');
-        return res.json();
+    fetch(apiUrl('/api/public/videos'))
+      .then(async (res) => {
+        const data = await parseJsonResponse<{ videos: VideoItem[]; error?: string }>(
+          res,
+          'Failed to load catalog'
+        );
+        if (!res.ok) throw new Error(data.error || 'Failed to load catalog');
+        return data;
       })
       .then((data: { videos: VideoItem[] }) => {
         if (active) {
@@ -49,7 +54,7 @@ export function HomePage({ onNavigate, videoCounts, totalActive }: HomePageProps
         }
       })
       .catch((err) => {
-        if (active) setError(err.message || 'Unable to load streams');
+        if (active) setError(err?.message || 'Unable to load streams');
       })
       .finally(() => {
         if (active) setLoading(false);

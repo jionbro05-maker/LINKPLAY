@@ -28,13 +28,16 @@ export function setAdminToken(token: string | null): void {
   }
 }
 
+import { apiUrl } from './api';
+
 export async function adminFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   const token = getAdminToken();
   const headers = new Headers(init.headers || {});
   if (token && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-  return fetch(input, {
+  const target = typeof input === 'string' ? apiUrl(input) : input;
+  return fetch(target, {
     ...init,
     headers,
     credentials: 'include',

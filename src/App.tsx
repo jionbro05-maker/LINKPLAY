@@ -12,6 +12,7 @@ import { Navbar } from './components/Navbar';
 import { OfflineIndicator } from './components/PWAInstallButton';
 import { WatchPage } from './components/WatchPage';
 import { adminFetch, setAdminToken } from './lib/adminAuth';
+import { apiUrl } from './lib/api';
 import { useLivePresence } from './lib/session';
 import { PublicConfig } from './types';
 
@@ -52,7 +53,7 @@ export default function App() {
   }, []);
 
   const loadConfig = useCallback(() => {
-    fetch('/api/public/config')
+    fetch(apiUrl('/api/public/config'))
       .then((res) => (res.ok ? res.json() : null))
       .then((data: PublicConfig | null) => {
         if (data) setConfig(data);
